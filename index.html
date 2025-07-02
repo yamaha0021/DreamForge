@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Click Game</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the drag race lights */
+        .light-circle {
+            width: 60px; /* Slightly smaller for multiple lights */
+            height: 60px;
+            border-radius: 50%;
+            background-color: #333; /* Default dark state */
+            margin: 8px auto; /* Reduced margin */
+            border: 3px solid #555;
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        /* Active light colors */
+        .light-circle.yellow {
+            background-color: #facc15; /* Tailwind yellow-400 */
+            box-shadow: 0 0 18px #facc15;
+        }
+        .light-circle.green {
+            background-color: #22c55e; /* Tailwind green-500 */
+            box-shadow: 0 0 20px #22c55e;
+        }
+
+        /* Ensure the body takes full height for centering */
+        body {
+            min-height: 100vh;
+            font-family: "Inter", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a202c; /* Dark background */
+        }
+
+        /* Styles for the menu/modal */
+        .menu-modal {
+            position: absolute;
+            top: 1rem; /* Adjust as needed */
+            right: 1rem; /* Adjust as needed */
+            background-color: #2d3748; /* Tailwind gray-800 */
+            border-radius: 0.75rem; /* Tailwind rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Tailwind shadow-lg */
+            padding: 1.5rem;
+            width: 250px;
+            z-index: 10; /* Ensure it's above other content */
+            border: 2px solid #4a5568; /* Tailwind gray-600 */
+        }
+
+        /* Style for the close button within the modal */
+        .close-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #cbd5e0; /* Tailwind gray-300 */
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .close-button:hover {
+            background-color: #4a5568; /* Tailwind gray-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+
+    <div class="relative w-full max-w-md bg-gray-800 p-6 rounded-xl shadow-lg flex flex-col items-center">
+
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-100">Speed Click</h1>
+
+        <!-- Menu Button (Top Right) -->
+        <button id="menuButton" class="absolute top-4 right-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
+            Menu
+        </button>
+
+        <!-- Menu Modal (Initially Hidden) -->
+        <div id="menuModal" class="menu-modal hidden">
+            <!-- Close Button for Menu -->
+            <button id="closeMenuButton" class="close-button">
+                &times;
+            </button>
+            <h2 class="text-xl font-bold mb-4 text-gray-100">Reaction Times</h2>
+            <p class="mb-2 text-gray-200"><span class="font-semibold">Best:</span> <span id="bestTimeDisplay">N/A</span></p>
+            <p class="mb-4 text-gray-200"><span class="font-semibold">Worst:</span> <span id="worstTimeDisplay">N/A</span></p>
+            <h3 class="text-lg font-semibold mb-2 text-gray-200">Recent 5:</h3>
+            <ul id="recentTimesList" class="list-disc list-inside text-gray-300">
+                <!-- Recent times will be inserted here by JavaScript -->
+            </ul>
+        </div>
+
+        <!-- Lights and Reaction Time Container -->
+        <div class="flex items-center justify-center gap-6 mb-8 w-full">
+            <!-- Drag Race Lights Container -->
+            <div class="bg-gray-700 p-4 rounded-lg shadow-inner border-2 border-gray-600 flex flex-col items-center">
+                <div id="yellowLight1" class="light-circle"></div>
+                <div id="yellowLight2" class="light-circle"></div>
+                <div id="yellowLight3" class="light-circle"></div>
+                <div id="greenLight" class="light-circle"></div>
+            </div>
+
+            <!-- Result Display (moved to the right of lights) -->
+            <p id="resultDisplay" class="text-xl font-semibold text-gray-200 text-center">
+                <!-- This will be empty during the countdown -->
+            </p>
+        </div>
+
+        <!-- Reaction Button -->
+        <button id="reactionButton" class="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white text-2xl font-extrabold rounded-full shadow-xl transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-75" disabled>
+            React!
+        </button>
+
+        <!-- Reset Button (initially hidden, shown after reaction) -->
+        <button id="resetButton" class="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out hidden">
+            Reset
+        </button>
+
+        <!-- Small Ad Container (moved to bottom) -->
+        <div class="bg-gray-600 p-3 rounded-lg shadow-md border-2 border-gray-500 text-center text-sm mt-8 w-full max-w-xs">
+            <p class="font-bold text-gray-200 mb-1">Ad Space</p>
+            <p class="text-xs text-gray-300">Check out our new game!</p>
+            <img src="https://placehold.co/120x90/4a5568/edf2f7?text=Ad" alt="Placeholder Ad" class="mt-2 rounded mx-auto">
+        </div>
+
+    </div>
+
+    <!-- Add a footer with copyright information -->
+    <footer class="mt-8 text-center text-gray-400 text-sm">
+        <p>&copy; 2025 DreamForge. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // IMPORTANT: This code is proprietary and all rights are reserved by DreamForge.
+        // Unauthorized copying, reuse, or redistribution of this code is prohibited.
+
+        // Get references to DOM elements
+        const yellowLight1 = document.getElementById('yellowLight1');
+        const yellowLight2 = document.getElementById('yellowLight2');
+        const yellowLight3 = document.getElementById('yellowLight3');
+        const greenLight = document.getElementById('greenLight');
+        const reactionButton = document.getElementById('reactionButton');
+        const resetButton = document.getElementById('resetButton');
+        const resultDisplay = document.getElementById('resultDisplay');
+        const menuButton = document.getElementById('menuButton');
+        const menuModal = document.getElementById('menuModal');
+        const closeMenuButton = document.getElementById('closeMenuButton');
+        const bestTimeDisplay = document.getElementById('bestTimeDisplay');
+        const worstTimeDisplay = document.getElementById('worstTimeDisplay');
+        const recentTimesList = document.getElementById('recentTimesList');
+
+        let startTime; // To store the time when the green light appears
+        let timeoutId; // To store the ID of the setTimeout for clearing
+        let gameStarted = false; // Flag to indicate if the game is in progress
+
+        // Variables for tracking reaction times
+        let reactionTimes = []; // Stores the 5 most recent times
+        let bestTime = Infinity;
+        let worstTime = 0;
+
+        // Keys for localStorage
+        const LOCAL_STORAGE_KEY_BEST = 'speedClickBestTime';
+        const LOCAL_STORAGE_KEY_WORST = 'speedClickWorstTime';
+        const LOCAL_STORAGE_KEY_RECENT = 'speedClickRecentTimes';
+
+        /**
+         * Loads reaction time data from localStorage.
+         */
+        function loadReactionTimes() {
+            const storedBestTime = localStorage.getItem(LOCAL_STORAGE_KEY_BEST);
+            const storedWorstTime = localStorage.getItem(LOCAL_STORAGE_KEY_WORST);
+            const storedRecentTimes = localStorage.getItem(LOCAL_STORAGE_KEY_RECENT);
+
+            if (storedBestTime !== null) {
+                bestTime = parseInt(storedBestTime, 10);
+            }
+            if (storedWorstTime !== null) {
+                worstTime = parseInt(storedWorstTime, 10);
+            }
+            if (storedRecentTimes !== null) {
+                try {
+                    reactionTimes = JSON.parse(storedRecentTimes);
+                    // Ensure it's an array and limit to 5
+                    if (!Array.isArray(reactionTimes)) {
+                        reactionTimes = [];
+                    } else {
+                        reactionTimes = reactionTimes.slice(-5); // Keep only the last 5
+                    }
+                } catch (e) {
+                    console.error("Error parsing recent times from localStorage:", e);
+                    reactionTimes = [];
+                }
+            }
+        }
+
+        /**
+         * Saves reaction time data to localStorage.
+         */
+        function saveReactionTimes() {
+            localStorage.setItem(LOCAL_STORAGE_KEY_BEST, bestTime.toString());
+            localStorage.setItem(LOCAL_STORAGE_KEY_WORST, worstTime.toString());
+            localStorage.setItem(LOCAL_STORAGE_KEY_RECENT, JSON.stringify(reactionTimes));
+        }
+
+        /**
+         * Resets all lights to their default off state.
+         * Clears any active timeouts, disables the reaction button, hides reset,
+         * and resets the game state and display message.
+         */
+        function resetLights() {
+            clearTimeout(timeoutId); // Clear any pending timeouts
+            yellowLight1.classList.remove('yellow');
+            yellowLight2.classList.remove('yellow');
+            yellowLight3.classList.remove('yellow');
+            greenLight.classList.remove('green');
+            reactionButton.disabled = true; // Disable button until green light
+            resultDisplay.textContent = ''; // Clear text content during countdown
+            gameStarted = false; // Reset game state
+            resetButton.classList.add('hidden'); // Hide reset button
+            menuModal.classList.add('hidden'); // Hide menu if open
+        }
+
+        /**
+         * Updates the display of best, worst, and recent times in the menu.
+         */
+        function updateMenuDisplay() {
+            bestTimeDisplay.textContent = bestTime === Infinity ? 'N/A' : `${bestTime} ms`;
+            worstTimeDisplay.textContent = worstTime === 0 ? 'N/A' : `${worstTime} ms`;
+
+            recentTimesList.innerHTML = ''; // Clear previous list items
+            if (reactionTimes.length === 0) {
+                recentTimesList.innerHTML = '<li class="text-gray-400">No times recorded yet.</li>';
+            } else {
+                // Display recent times in reverse chronological order
+                reactionTimes.slice().reverse().forEach(time => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${time} ms`;
+                    recentTimesList.appendChild(listItem);
+                });
+            }
+        }
+
+        /**
+         * Toggles the visibility of the menu modal.
+         */
+        function toggleMenu() {
+            menuModal.classList.toggle('hidden');
+            if (!menuModal.classList.contains('hidden')) {
+                updateMenuDisplay(); // Update display when menu is shown
+            }
+        }
+
+        /**
+         * Starts the drag racing light sequence.
+         * Lights illuminate in sequence (yellow1, yellow2, yellow3, then green)
+         * with random delays.
+         */
+        function startDragRaceSequence() {
+            resetLights(); // Ensure a clean start and hide reset button
+            gameStarted = true; // Mark game as started
+
+            // Initial random delay before the first yellow light
+            const initialDelay = Math.random() * 1000 + 500; // 0.5 to 1.5 seconds
+
+            timeoutId = setTimeout(() => {
+                yellowLight1.classList.add('yellow'); // Turn on first yellow
+                const delay1 = Math.random() * 500 + 300; // 0.3 to 0.8 seconds
+
+                timeoutId = setTimeout(() => {
+                    yellowLight2.classList.add('yellow'); // Turn on second yellow
+                    const delay2 = Math.random() * 500 + 300; // 0.3 to 0.8 seconds
+
+                    timeoutId = setTimeout(() => {
+                        yellowLight3.classList.add('yellow'); // Turn on third yellow
+                        const greenDelay = Math.random() * 1000 + 500; // 0.5 to 1.5 seconds
+
+                        timeoutId = setTimeout(() => {
+                            // Turn off all yellow lights before green
+                            yellowLight1.classList.remove('yellow');
+                            yellowLight2.classList.remove('yellow');
+                            yellowLight3.classList.remove('yellow');
+                            greenLight.classList.add('green'); // Turn on green
+                            startTime = Date.now(); // Record the exact time green light appears
+                            reactionButton.disabled = false; // Enable the reaction button
+                        }, greenDelay);
+                    }, delay2);
+                }, delay1);
+            }, initialDelay);
+        }
+
+        /**
+         * Handles the reaction button click.
+         * Calculates and displays the reaction time, or indicates "too soon".
+         */
+        function handleReaction() {
+            // Check if the game has started and the button is enabled (meaning green light is on)
+            if (!gameStarted || reactionButton.disabled) {
+                // If button is pressed before green light or game not started
+                resultDisplay.textContent = 'Too soon!'; // Display "Too soon!"
+                clearTimeout(timeoutId); // Stop any pending light sequence
+                reactionButton.disabled = true; // Keep button disabled
+                resetButton.classList.remove('hidden'); // Show reset button
+                gameStarted = false; // Mark game as ended
+                return;
+            }
+
+            const endTime = Date.now();
+            const reactionTime = endTime - startTime;
+            resultDisplay.textContent = `${reactionTime} ms`; // Display only the time with "ms"
+            reactionButton.disabled = true; // Disable button after first press
+            clearTimeout(timeoutId); // Clear any pending green light timeout
+            gameStarted = false; // Mark game as ended
+            resetButton.classList.remove('hidden'); // Show reset button
+
+            // Update reaction time history
+            reactionTimes.push(reactionTime);
+            if (reactionTimes.length > 5) {
+                reactionTimes.shift(); // Remove the oldest time if more than 5
+            }
+            bestTime = Math.min(bestTime, reactionTime);
+            worstTime = Math.max(worstTime, reactionTime);
+
+            saveReactionTimes(); // Save data to localStorage
+            updateMenuDisplay(); // Update menu display with new times
+        }
+
+        // Event Listeners
+        reactionButton.addEventListener('click', handleReaction);
+        resetButton.addEventListener('click', startDragRaceSequence); // Reset button also starts the game
+        menuButton.addEventListener('click', toggleMenu);
+        closeMenuButton.addEventListener('click', () => menuModal.classList.add('hidden'));
+
+        // Initial setup when the page loads
+        window.onload = () => {
+            loadReactionTimes(); // Load existing data
+            startDragRaceSequence();
+            updateMenuDisplay(); // Initialize menu display with loaded data
+        };
+    </script>
+</body>
+</html>
