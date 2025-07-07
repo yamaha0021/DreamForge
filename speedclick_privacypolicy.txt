@@ -1,0 +1,66 @@
+Privacy Policy for Speed Click
+Effective Date: July 7, 2025
+
+This Privacy Policy describes how DreamForge ("we," "us," or "our") handles information in connection with your use of the "Speed Click" mobile application (the "App").
+
+1. Information We Collect
+
+The "Speed Click" App is designed to be a simple reaction-time game and collects minimal personal data.
+
+Locally Stored Reaction Times: The App stores your reaction times (best, worst, and 5 most recent times) directly on your device's local storage. This data is never transmitted to us or any third parties. It remains solely on your device and is not associated with any personally identifiable information.
+
+Advertising Data (Google AdMob): The App integrates Google AdMob for advertising purposes. AdMob may collect and use certain data to serve personalized and non-personalized ads. This data may include:
+
+Device identifiers (e.g., Android Advertising ID)
+
+IP address
+
+Device type and operating system
+
+App usage information
+
+Location information (if enabled and consented to by the user on their device)
+
+Google AdMob's data collection and usage are governed by Google's Privacy Policy. We encourage you to review Google's Privacy Policy for more information on how Google uses data collected through AdMob: https://policies.google.com/privacy
+
+2. How We Use Information
+
+Local Reaction Times: The reaction times stored locally on your device are used solely to provide the game's functionality, such as displaying your personal best, worst, and recent scores within the App.
+
+Advertising: Data collected by Google AdMob is used to display advertisements within the App. We do not directly access or use this advertising data for any other purpose.
+
+3. Sharing and Disclosure of Information
+
+We do not share, sell, rent, or trade any personal information collected directly by the "Speed Click" App, as it only stores data locally on your device.
+
+Information collected by Google AdMob is handled by Google and its partners according to their respective privacy policies.
+
+4. Data Security
+
+We are committed to protecting the information handled by our App. While the App stores limited data locally, we implement reasonable security measures to protect against unauthorized access or disclosure. However, no method of transmission over the Internet or method of electronic storage is 100% secure.
+
+5. Children's Privacy
+
+The "Speed Click" App is not directed at children under the age of 13. We do not knowingly collect any personal information from children under 13. If you believe we have inadvertently collected such information, please contact us so we can promptly delete it.
+
+6. Your Choices
+
+Ad Personalization: You can control ad personalization settings on your Android device through your device's settings (usually in Google settings or Ads settings).
+
+Local Data: As data is stored locally, uninstalling the app will remove all stored reaction times.
+
+7. Changes to This Privacy Policy
+
+We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Effective Date" at the top. You are advised to review this Privacy Policy periodically for any changes.
+
+8. Contact Us
+
+If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at:
+
+[Your Support Email Address Here] (e.g., support@dreamforge.com)
+
+Intellectual Property Notice:
+
+© 2025 DreamForge. All Rights Reserved.
+
+The "Speed Click" app and its underlying code, design, and content are proprietary intellectual property of DreamForge. Unauthorized copying, reuse, or redistribution of this code is strictly prohibited.
